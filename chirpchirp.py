@@ -123,7 +123,7 @@ def load_config(path: Path) -> dict:
 
 
 def build_user_agent(ua: dict) -> str:
-    return f"{ua['app_name']}/{ua['version']} (+{ua['url']}; {ua['contact_email']})"
+    return f"{ua['app_name']}/{ua['version']} ({ua['url']}; {ua['contact_email']})"
 
 
 def prompt(msg: str, default: str | None = None) -> str:
@@ -262,19 +262,41 @@ def compute_duplex_offset(output_mhz: float, input_mhz: float | None) -> tuple[s
     return "-", abs(diff)
 
 
-def tone_fields(row: dict) -> tuple[str, str, str]:
-    """Return (Tone, rToneFreq, cToneFreq) for Chirp."""
-    up = fget(row, "PL", "PL Uplink", "TX PL", "CTCSS Uplink").strip()
-    dn = fget(row, "TSQ", "PL Downlink", "RX PL", "CTCSS Downlink").strip()
-    r_tone = up if up else "88.5"
-    c_tone = dn if dn else (up if up else "88.5")
-    if up and dn:
-        tone_col = "TSQ"
-    elif up:
-        tone_col = "Tone"
-    else:
-        tone_col = ""
-    return tone_col, r_tone, c_tone
+def _classify_tone(val: str) -> tuple[str, str]:
+    v = (val or "").strip()
+    if not v or v.upper() == "CSQ":
+        return "none", ""
+    if v.upper().startswith("D") and v[1:].isdigit():
+        return "dcs", v[1:].zfill(3)
+    try:
+        float(v)
+        return "ctcss", v
+    except ValueError:
+        return "none", ""
+
+
+def tone_fields(row: dict) -> tuple[str, str, str, str, str, str, str]:
+    """Return (Tone, rToneFreq, cToneFreq, DtcsCode, RxDtcsCode, DtcsPolarity, CrossMode)."""
+    up_kind, up_val = _classify_tone(fget(row, "PL"))
+    dn_kind, dn_val = _classify_tone(fget(row, "TSQ"))
+
+    r_tone = up_val if up_kind == "ctcss" else "88.5"
+    c_tone = dn_val if dn_kind == "ctcss" else (up_val if up_kind == "ctcss" else "88.5")
+    dtcs = up_val if up_kind == "dcs" else "023"
+    rx_dtcs = dn_val if dn_kind == "dcs" else (up_val if up_kind == "dcs" else "023")
+    polarity = "NN"
+
+    kinds = (up_kind, dn_kind)
+    if kinds == ("none", "none"):
+        return "", r_tone, c_tone, dtcs, rx_dtcs, polarity, "Tone->Tone"
+    if kinds == ("ctcss", "none"):
+        return "Tone", r_tone, c_tone, dtcs, rx_dtcs, polarity, "Tone->Tone"
+    if kinds == ("ctcss", "ctcss"):
+        return "TSQL", r_tone, c_tone, dtcs, rx_dtcs, polarity, "Tone->Tone"
+    if kinds in (("dcs", "none"), ("dcs", "dcs"), ("none", "dcs")):
+        return "DTCS", r_tone, c_tone, dtcs, rx_dtcs, polarity, "DTCS->DTCS"
+    label = {"ctcss": "Tone", "dcs": "DTCS", "none": ""}
+    return "Cross", r_tone, c_tone, dtcs, rx_dtcs, polarity, f"{label[up_kind]}->{label[dn_kind]}"
 
 
 def build_chirp_rows(repeaters: list[dict], origin: tuple[float, float], radius_mi: float,
@@ -303,7 +325,7 @@ def build_chirp_rows(repeaters: list[dict], origin: tuple[float, float], radius_
         loc = start_index + i
         name = fget(row, "Callsign")[:8]
         duplex, offset = compute_duplex_offset(freq, row_input_freq(row))
-        tone_col, r_tone, c_tone = tone_fields(row)
+        tone_col, r_tone, c_tone, dtcs, rx_dtcs, polarity, cross_mode = tone_fields(row)
         city = fget(row, "Nearest City", "City", "Location")
         notes = fget(row, "Notes")
         comment_parts = [p for p in (city, f"{dist:.1f}mi", notes) if p]
@@ -317,14 +339,14 @@ def build_chirp_rows(repeaters: list[dict], origin: tuple[float, float], radius_
             tone_col,
             r_tone,
             c_tone,
-            "023",
-            "NN",
-            "023",
-            "Tone->Tone",
+            dtcs,
+            polarity,
+            rx_dtcs,
+            cross_mode,
             "FM",
             "5.00",
             "",
-            "",
+            "High",
             comment,
             "", "", "", "",
         ])
