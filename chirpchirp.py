@@ -280,23 +280,24 @@ def tone_fields(row: dict) -> tuple[str, str, str, str, str, str, str]:
     up_kind, up_val = _classify_tone(fget(row, "PL"))
     dn_kind, dn_val = _classify_tone(fget(row, "TSQ"))
 
-    r_tone = up_val if up_kind == "ctcss" else "88.5"
-    c_tone = dn_val if dn_kind == "ctcss" else (up_val if up_kind == "ctcss" else "88.5")
-    dtcs = up_val if up_kind == "dcs" else "023"
-    rx_dtcs = dn_val if dn_kind == "dcs" else (up_val if up_kind == "dcs" else "023")
+    ctcss = up_val if up_kind == "ctcss" else (dn_val if dn_kind == "ctcss" else "88.5")
+    dcs = up_val if up_kind == "dcs" else (dn_val if dn_kind == "dcs" else "023")
     polarity = "NN"
 
     kinds = (up_kind, dn_kind)
     if kinds == ("none", "none"):
-        return "", r_tone, c_tone, dtcs, rx_dtcs, polarity, "Tone->Tone"
+        return "", ctcss, ctcss, dcs, dcs, polarity, "Tone->Tone"
     if kinds == ("ctcss", "none"):
-        return "Tone", r_tone, c_tone, dtcs, rx_dtcs, polarity, "Tone->Tone"
-    if kinds == ("ctcss", "ctcss"):
-        return "TSQL", r_tone, c_tone, dtcs, rx_dtcs, polarity, "Tone->Tone"
+        return "Tone", ctcss, ctcss, dcs, dcs, polarity, "Tone->Tone"
+    if kinds in (("ctcss", "ctcss"), ("none", "ctcss")):
+        return "TSQL", ctcss, ctcss, dcs, dcs, polarity, "Tone->Tone"
     if kinds in (("dcs", "none"), ("dcs", "dcs"), ("none", "dcs")):
-        return "DTCS", r_tone, c_tone, dtcs, rx_dtcs, polarity, "DTCS->DTCS"
+        return "DTCS", ctcss, ctcss, dcs, dcs, polarity, "DTCS->DTCS"
     label = {"ctcss": "Tone", "dcs": "DTCS", "none": ""}
-    return "Cross", r_tone, c_tone, dtcs, rx_dtcs, polarity, f"{label[up_kind]}->{label[dn_kind]}"
+    r_tone = up_val if up_kind == "ctcss" else (dn_val if dn_kind == "ctcss" else "88.5")
+    c_tone = dn_val if dn_kind == "ctcss" else r_tone
+    rx_dcs = dn_val if dn_kind == "dcs" else dcs
+    return "Cross", r_tone, c_tone, dcs, rx_dcs, polarity, f"{label[up_kind]}->{label[dn_kind]}"
 
 
 def build_chirp_rows(repeaters: list[dict], origin: tuple[float, float], radius_mi: float,
