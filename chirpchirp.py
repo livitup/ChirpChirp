@@ -11,6 +11,7 @@ import sys
 import time
 from pathlib import Path
 
+import questionary
 import requests
 
 RB_NA_URL = "https://www.repeaterbook.com/api/export.php"
@@ -374,8 +375,16 @@ def main() -> int:
     zipcode = args.zipcode or prompt("Zip / postal code")
     country = (args.country or prompt("Country code", default="us")).lower()
     radius = args.radius if args.radius is not None else float(prompt("Radius (miles)", default="30"))
-    bands_str = args.bands or prompt(f"Bands ({', '.join(BANDS)}, or 'all')", default="2m,70cm")
-    bands = parse_bands(bands_str)
+    if args.bands:
+        bands = parse_bands(args.bands)
+    else:
+        picked = questionary.checkbox(
+            "Select bands (space to toggle, enter to confirm)",
+            choices=list(BANDS.keys()),
+        ).ask()
+        if not picked:
+            die("no bands selected")
+        bands = picked
     out_path = Path(args.output or prompt("Output file", default="repeaters.csv"))
     start_index = args.start_index if args.start_index is not None else int(prompt("Chirp starting slot", default="0"))
 
