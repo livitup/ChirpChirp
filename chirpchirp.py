@@ -36,58 +36,33 @@ STATE_FIPS = {
     "WV": "54", "WI": "55", "WY": "56",
 }
 
-STATE_ADJACENCY = {
-    "AL": ["FL", "GA", "TN", "MS"],
-    "AK": [],
-    "AZ": ["CA", "NV", "UT", "NM", "CO"],
-    "AR": ["MO", "TN", "MS", "LA", "TX", "OK"],
-    "CA": ["OR", "NV", "AZ"],
-    "CO": ["WY", "NE", "KS", "OK", "NM", "AZ", "UT"],
-    "CT": ["NY", "MA", "RI"],
-    "DE": ["MD", "PA", "NJ"],
-    "DC": ["MD", "VA"],
-    "FL": ["GA", "AL"],
-    "GA": ["FL", "AL", "TN", "NC", "SC"],
-    "HI": [],
-    "ID": ["WA", "OR", "NV", "UT", "WY", "MT"],
-    "IL": ["WI", "IA", "MO", "KY", "IN"],
-    "IN": ["MI", "OH", "KY", "IL"],
-    "IA": ["MN", "WI", "IL", "MO", "NE", "SD"],
-    "KS": ["NE", "MO", "OK", "CO"],
-    "KY": ["IL", "IN", "OH", "WV", "VA", "TN", "MO"],
-    "LA": ["TX", "AR", "MS"],
-    "ME": ["NH"],
-    "MD": ["DE", "PA", "WV", "VA", "DC"],
-    "MA": ["NH", "VT", "NY", "CT", "RI"],
-    "MI": ["WI", "IN", "OH", "MN"],
-    "MN": ["ND", "SD", "IA", "WI", "MI"],
-    "MS": ["TN", "AL", "LA", "AR"],
-    "MO": ["IA", "IL", "KY", "TN", "AR", "OK", "KS", "NE"],
-    "MT": ["ID", "WY", "SD", "ND"],
-    "NE": ["SD", "IA", "MO", "KS", "CO", "WY"],
-    "NV": ["OR", "ID", "UT", "AZ", "CA"],
-    "NH": ["VT", "MA", "ME"],
-    "NJ": ["NY", "PA", "DE"],
-    "NM": ["CO", "OK", "TX", "AZ", "UT"],
-    "NY": ["VT", "MA", "CT", "NJ", "PA"],
-    "NC": ["VA", "TN", "GA", "SC"],
-    "ND": ["MN", "SD", "MT"],
-    "OH": ["MI", "PA", "WV", "KY", "IN"],
-    "OK": ["KS", "MO", "AR", "TX", "NM", "CO"],
-    "OR": ["WA", "ID", "NV", "CA"],
-    "PA": ["NY", "NJ", "DE", "MD", "WV", "OH"],
-    "RI": ["CT", "MA"],
-    "SC": ["NC", "GA"],
-    "SD": ["ND", "MN", "IA", "NE", "WY", "MT"],
-    "TN": ["KY", "VA", "NC", "GA", "AL", "MS", "AR", "MO"],
-    "TX": ["NM", "OK", "AR", "LA"],
-    "UT": ["ID", "WY", "CO", "NM", "AZ", "NV"],
-    "VT": ["NY", "MA", "NH"],
-    "VA": ["NC", "TN", "KY", "WV", "MD", "DC"],
-    "WA": ["ID", "OR"],
-    "WV": ["OH", "PA", "MD", "VA", "KY"],
-    "WI": ["MN", "IA", "IL", "MI"],
-    "WY": ["MT", "SD", "NE", "CO", "UT", "ID"],
+STATE_BBOX = {
+    "AL": (30.22, 35.01, -88.47, -84.89), "AK": (51.21, 71.44, -179.15, -129.98),
+    "AZ": (31.33, 37.00, -114.82, -109.04), "AR": (33.00, 36.50, -94.62, -89.64),
+    "CA": (32.53, 42.01, -124.48, -114.13), "CO": (36.99, 41.00, -109.06, -102.04),
+    "CT": (40.98, 42.05, -73.73, -71.79),   "DE": (38.45, 39.84, -75.79, -75.04),
+    "DC": (38.79, 38.99, -77.12, -76.91),   "FL": (24.52, 31.00, -87.63, -80.03),
+    "GA": (30.36, 35.00, -85.61, -80.84),   "HI": (18.91, 22.24, -160.25, -154.75),
+    "ID": (42.00, 49.00, -117.24, -111.04), "IL": (36.97, 42.51, -91.51, -87.02),
+    "IN": (37.77, 41.76, -88.10, -84.78),   "IA": (40.38, 43.50, -96.64, -90.14),
+    "KS": (36.99, 40.00, -102.05, -94.59),  "KY": (36.50, 39.15, -89.57, -81.96),
+    "LA": (28.93, 33.02, -94.04, -88.82),   "ME": (43.06, 47.46, -71.08, -66.95),
+    "MD": (37.89, 39.72, -79.49, -75.05),   "MA": (41.24, 42.89, -73.51, -69.93),
+    "MI": (41.70, 48.31, -90.42, -82.41),   "MN": (43.50, 49.38, -97.24, -89.49),
+    "MS": (30.17, 34.99, -91.66, -88.10),   "MO": (35.99, 40.61, -95.77, -89.10),
+    "MT": (44.36, 49.00, -116.05, -104.04), "NE": (40.00, 43.00, -104.05, -95.31),
+    "NV": (35.00, 42.00, -120.01, -114.04), "NH": (42.70, 45.31, -72.56, -70.61),
+    "NJ": (38.93, 41.36, -75.56, -73.89),   "NM": (31.33, 37.00, -109.05, -103.00),
+    "NY": (40.50, 45.02, -79.76, -71.86),   "NC": (33.84, 36.59, -84.32, -75.46),
+    "ND": (45.94, 49.00, -104.05, -96.55),  "OH": (38.40, 41.98, -84.82, -80.52),
+    "OK": (33.62, 37.00, -103.00, -94.43),  "OR": (41.99, 46.29, -124.57, -116.46),
+    "PA": (39.72, 42.27, -80.52, -74.69),   "RI": (41.15, 42.02, -71.86, -71.12),
+    "SC": (32.03, 35.22, -83.35, -78.54),   "SD": (42.48, 45.94, -104.06, -96.44),
+    "TN": (34.98, 36.68, -90.31, -81.65),   "TX": (25.84, 36.50, -106.65, -93.51),
+    "UT": (37.00, 42.00, -114.05, -109.04), "VT": (42.73, 45.02, -73.44, -71.46),
+    "VA": (36.54, 39.47, -83.68, -75.24),   "WA": (45.54, 49.00, -124.73, -116.92),
+    "WV": (37.20, 40.64, -82.64, -77.72),   "WI": (42.49, 47.08, -92.89, -86.25),
+    "WY": (40.99, 45.01, -111.06, -104.05),
 }
 
 CHIRP_HEADER = [
@@ -163,6 +138,23 @@ def geocode(zipcode: str, country: str) -> tuple[float, float, str | None]:
     lon = float(place["longitude"])
     state_abbr = place.get("state abbreviation") or place.get("state")
     return lat, lon, state_abbr
+
+
+def dist_to_bbox_miles(lat: float, lon: float, bbox: tuple[float, float, float, float]) -> float:
+    minlat, maxlat, minlon, maxlon = bbox
+    nlat = max(minlat, min(lat, maxlat))
+    nlon = max(minlon, min(lon, maxlon))
+    return haversine_miles(lat, lon, nlat, nlon)
+
+
+def states_within_radius(lat: float, lon: float, radius_mi: float, origin_state: str) -> list[str]:
+    picked = [origin_state]
+    for abbr, bbox in STATE_BBOX.items():
+        if abbr == origin_state:
+            continue
+        if dist_to_bbox_miles(lat, lon, bbox) <= radius_mi:
+            picked.append(abbr)
+    return picked
 
 
 def haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -406,7 +398,7 @@ def main() -> int:
         if not state_abbr or state_abbr.upper() not in STATE_FIPS:
             die(f"could not determine US state from zip {zipcode} (got {state_abbr!r})")
         state_abbr = state_abbr.upper()
-        states = [state_abbr] + STATE_ADJACENCY.get(state_abbr, [])
+        states = states_within_radius(lat, lon, radius, state_abbr)
         for st in states:
             fips = STATE_FIPS.get(st)
             if not fips:
