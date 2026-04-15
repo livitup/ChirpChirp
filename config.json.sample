@@ -1,0 +1,9 @@
+{
+  "api_token": "changeme",
+  "user_agent": {
+    "app_name": "changeme",
+    "version": "changeme",
+    "url": "changeme",
+    "contact_email": "changeme"
+  }
+}
